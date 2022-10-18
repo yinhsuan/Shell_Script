@@ -19,7 +19,7 @@ function handler() {
         sha1Arr+=($(echo $i | grep "sha-1"))
     done
 
-    # decode files
+    # run each file case
     declare -i count=0
     while [ ${count} -lt ${#nameArr[@]} ]; do
         if [ ${count} -ne 0 ]; then
@@ -27,10 +27,9 @@ function handler() {
             data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
-            # name=${nameArr[${count}]}
-            # data=${dataArr[${count}-1]}
-            # md5=${md5Arr[${count}-1]}
-            # sha1=${sha1Arr[${count}-1]}
+
+            echo ${data} | base64 --decode
+            echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         fi
         count=count+1
