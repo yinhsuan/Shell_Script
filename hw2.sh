@@ -23,11 +23,14 @@ function handler() {
     declare -i count=0
     while [ ${count} -lt ${#nameArr[@]} ]; do
         if [ ${count} -ne 0 ]; then
-            # name=${nameArr[${count}-1]}
-            name=($(echo "${nameArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            name=($(echo "${nameArr[${count}]}" | awk 'BEGIN {FS=":"} {print $2}'))
             data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            # name=${nameArr[${count}]}
+            # data=${dataArr[${count}-1]}
+            # md5=${md5Arr[${count}-1]}
+            # sha1=${sha1Arr[${count}-1]}
 
         fi
         count=count+1
@@ -39,8 +42,8 @@ function handler() {
 inputFile=""
 outputFile=""
 outputDir=""
-isC=0
-isJ=0
+declare -i isC=0
+declare -i isJ=0
 
 OPTERR=0
 while getopts i:o:c:j op; do
