@@ -19,6 +19,19 @@ function handler() {
         sha1Arr+=($(echo $i | grep "sha-1"))
     done
 
+    # decode files
+    declare -i count=0
+    while [ ${count} -lt ${#nameArr[@]} ]; do
+        if [ ${count} -ne 0 ]; then
+            # name=${nameArr[${count}-1]}
+            name=($(echo "${nameArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+
+        fi
+        count=count+1
+    done
 
 }
 
