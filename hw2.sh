@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 function handler() {
     declare -a md5Arr
@@ -27,6 +27,13 @@ function handler() {
             data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+
+            # output files
+            mkdir -p "${name%/*}" && touch "$name"
+            chmod 666 "${name}"
+            echo "${data}" | base64 --decode > "${name}"
+
+
         fi
         count=count+1
     done
