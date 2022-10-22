@@ -8,6 +8,8 @@ function handler() {
     declare -a hashArr
 
     # get json elements
+    authorArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /author/ p;}'))
+    dateArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /date/ p;}'))
     nameArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /name/ p;}'))
     dataArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /data/ p;}'))
     hashArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/hash:{//g; s/}//g; /md5/ p;}'))
@@ -19,21 +21,37 @@ function handler() {
         sha1Arr+=($(echo $i | grep "sha-1"))
     done
 
+
     # run each file case
     declare -i count=0
     while [ ${count} -lt ${#nameArr[@]} ]; do
         if [ ${count} -ne 0 ]; then
-            name=($(echo "${nameArr[${count}]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            dirandname=($(echo "${nameArr[${count}]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            # dir=($(echo "${dirandname}" | sed -n '{s/${name}//g;}'))
+            # name=($(echo "${dirandname}" | awk -F "/" '{print $NF}'))
+            dir="$(dirname "${dirandname}")" ;
+            name="$(basename "${dirandname}")"
             data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
+            # size="$(wc -c <"${dirandname}")"
+            size=$(($(wc -c < "$dirandname"))) # get the size with blank in the front
+            csvpath=${dir}"/files.csv"
+            tsvpath=${dir}"/files.tsv"
+
+            # create dir & files
+            mkdir -p "${dirandname%/*}" && touch "$dirandname"
+            chmod 666 "${dirandname}"
 
             # output files
-            mkdir -p "${name%/*}" && touch "$name"
-            chmod 666 "${name}"
-            echo "${data}" | base64 --decode > "${name}"
+            echo "${data}" | base64 --decode > "${dirandname}"
 
-
+            # output csv or tsv
+            if [ ${isC} -eq 1 ]; then
+                echo "${name},${size},${md5},${sha1}" > ${csvpath}
+            elif [ ${isC} -eq 2 ]; then
+                printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" > ${tsvpath}
+            fi
         fi
         count=count+1
     done
@@ -44,7 +62,7 @@ function handler() {
 inputFile=""
 outputFile=""
 outputDir=""
-declare -i isC=0
+declare -i isC=0 #isC=1(csv) #isC=2(tsv)
 declare -i isJ=0
 
 OPTERR=0
