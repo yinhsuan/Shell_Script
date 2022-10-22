@@ -109,5 +109,5 @@ while getopts i:o:c:j op; do
         esac
 done
 
-# call function => decode the file
+# call function
 handler
