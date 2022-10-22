@@ -21,6 +21,16 @@ function handler() {
         sha1Arr+=($(echo $i | grep "sha-1"))
     done
 
+    
+    # output info.json
+    if [ ${isJ} -eq 1 ]; then
+        name=($(echo "${nameArr[0]}" | awk 'BEGIN {FS=":"} {print $2}'))
+        author=($(echo "${authorArr[0]}" | awk 'BEGIN {FS=":"} {print $2}'))
+        date=($(echo "${dateArr[0]}" | awk 'BEGIN {FS=":"} {print $2}'))
+        formatDate=($(date -I seconds -r ${date}))
+        jsonpath=${outputDir}"/info.json"
+        printf "{\"name\": \"%s\", \"author\": \"%s\", \"date\": \"%s\"}" "${name}" "${author}" "${formatDate}" > "${jsonpath}"
+    fi
 
     # run each file case
     declare -i count=0
@@ -29,28 +39,26 @@ function handler() {
             dirandname=($(echo "${nameArr[${count}]}" | awk 'BEGIN {FS=":"} {print $2}'))
             # dir=($(echo "${dirandname}" | sed -n '{s/${name}//g;}'))
             # name=($(echo "${dirandname}" | awk -F "/" '{print $NF}'))
-            dir="$(dirname "${dirandname}")" ;
+            dir="$(dirname "${dirandname}")" ; 
             name="$(basename "${dirandname}")"
             data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
             sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
-            # size="$(wc -c <"${dirandname}")"
-            size=$(($(wc -c < "$dirandname"))) # get the size with blank in the front
             csvpath=${dir}"/files.csv"
             tsvpath=${dir}"/files.tsv"
 
             # create dir & files
-            mkdir -p "${dirandname%/*}" && touch "$dirandname"
-            chmod 666 "${dirandname}"
+            mkdir -p ${outputDir}"/"${dirandname%/*}
 
             # output files
-            echo "${data}" | base64 --decode > "${dirandname}"
+            echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
 
             # output csv or tsv
+            size=$(($(wc -c < ${outputDir}"/"${dirandname}))) # get the size with blank in the front
             if [ ${isC} -eq 1 ]; then
-                echo "${name},${size},${md5},${sha1}" > ${csvpath}
+                echo "${name},${size},${md5},${sha1}" > ${outputDir}"/"${csvpath}
             elif [ ${isC} -eq 2 ]; then
-                printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" > ${tsvpath}
+                printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" > ${outputDir}"/"${tsvpath}
             fi
         fi
         count=count+1
@@ -73,6 +81,7 @@ while getopts i:o:c:j op; do
             ;;
         o)
             outputDir=${OPTARG} 
+            mkdir -p "${outputDir}"
             ;;
         c)
             if [ ${OPTARG} = "csv" ]; then
