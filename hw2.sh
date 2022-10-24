@@ -14,7 +14,7 @@ handler() {
     fi
 
     # run each file case
-    declare -i counter=0;
+    counter=0;
     jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=counter+1; done
 
     for jsonFile in `ls *json`; do
@@ -49,8 +49,8 @@ handler() {
 inputFile=""
 outputFile=""
 outputDir=""
-declare -i isC=0 #isC=1(csv) #isC=2(tsv)
-declare -i isJ=0
+isC=0 #isC=1(csv) #isC=2(tsv)
+isJ=0
 
 OPTERR=0
 while getopts i:o:c:j op; do
@@ -76,8 +76,10 @@ while getopts i:o:c:j op; do
             ;;
         *)
             {
-                echo "hw2.sh -i INPUT -o OUTPUT [-c csv|tsv] [-j]\n"
-                echo "Available Options:\n"
+                echo "hw2.sh -i INPUT -o OUTPUT [-c csv|tsv] [-j]"
+                echo ""
+                echo "Available Options:"
+                echo ""
                 echo "-i: Input file to be decoded"
                 echo "-o: Output directory"
                 echo "-c csv|tsv: Output files.[ct]sv"
