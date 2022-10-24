@@ -53,19 +53,18 @@ isC=0 #isC=1(csv) #isC=2(tsv)
 isJ=0
 
 errorMsg() {
-        echo "hw2.sh -i INPUT -o OUTPUT [-c csv|tsv] [-j]"
-        echo ""
-        echo "Available Options:"
-        echo ""
-        echo "-i: Input file to be decoded"
-        echo "-o: Output directory"
-        echo "-c csv|tsv: Output files.[ct]sv"
-        echo "-j: Output info.json"
-        exit 1
-    } >&2
+    echo "hw2.sh -i INPUT -o OUTPUT [-c csv|tsv] [-j]"
+    echo ""
+    echo "Available Options:"
+    echo ""
+    echo "-i: Input file to be decoded"
+    echo "-o: Output directory"
+    echo "-c csv|tsv: Output files.[ct]sv"
+    echo "-j: Output info.json"
+    exit 1
+} >&2
 
-OPTERR=0
-while getopts i:o:c:j op; do
+while getopts :i:o:c:j op; do
     case $op in
         i)
             inputFile=${OPTARG}
