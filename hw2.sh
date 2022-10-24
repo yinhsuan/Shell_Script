@@ -1,67 +1,46 @@
 #!/bin/sh
 
 function handler() {
-    declare -a md5Arr
-    declare -a sha1Arr
-    declare -a nameArr
-    declare -a dataArr
-    declare -a hashArr
+    # get variable
+    name=($(cat ${inputFile} | jq '.name' | sed '{s/"//g;}'))
+    author=($(cat ${inputFile} | jq '.author' | sed '{s/"//g;}'))
+    date=($(cat ${inputFile} | jq '.date' | sed '{s/"//g;}'))
 
-    # get json elements
-    authorArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /author/ p;}'))
-    dateArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /date/ p;}'))
-    nameArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /name/ p;}'))
-    dataArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/,//g; /data/ p;}'))
-    hashArr=($(cat ${inputFile} | sed -n '{s/ //g; s/"//g; s/hash:{//g; s/}//g; /md5/ p;}'))
-    hashArr=($(awk -v var="${hashArr[*]}" 'BEGIN {split(var,list,","); for (i=1;i<=length(list);i++) print list[i]}'))
-    for i in ${hashArr[*]}; do
-        md5Arr+=($(echo $i | grep "md5"))
-    done
-    for i in ${hashArr[*]}; do
-        sha1Arr+=($(echo $i | grep "sha-1"))
-    done
-
-    
     # output info.json
     if [ ${isJ} -eq 1 ]; then
-        name=($(echo "${nameArr[0]}" | awk 'BEGIN {FS=":"} {print $2}'))
-        author=($(echo "${authorArr[0]}" | awk 'BEGIN {FS=":"} {print $2}'))
-        date=($(echo "${dateArr[0]}" | awk 'BEGIN {FS=":"} {print $2}'))
         formatDate=($(date -I seconds -r ${date}))
         jsonpath=${outputDir}"/info.json"
         printf "{\"name\": \"%s\", \"author\": \"%s\", \"date\": \"%s\"}" "${name}" "${author}" "${formatDate}" > "${jsonpath}"
     fi
 
     # run each file case
-    declare -i count=0
-    while [ ${count} -lt ${#nameArr[@]} ]; do
-        if [ ${count} -ne 0 ]; then
-            dirandname=($(echo "${nameArr[${count}]}" | awk 'BEGIN {FS=":"} {print $2}'))
-            # dir=($(echo "${dirandname}" | sed -n '{s/${name}//g;}'))
-            # name=($(echo "${dirandname}" | awk -F "/" '{print $NF}'))
-            dir="$(dirname "${dirandname}")" ; 
-            name="$(basename "${dirandname}")"
-            data=($(echo "${dataArr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
-            md5=($(echo "${md5Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
-            sha1=($(echo "${sha1Arr[${count}-1]}" | awk 'BEGIN {FS=":"} {print $2}'))
-            csvpath=${dir}"/files.csv"
-            tsvpath=${dir}"/files.tsv"
+    declare -i counter=0;
+    jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=counter+1; done
 
-            # create dir & files
-            mkdir -p ${outputDir}"/"${dirandname%/*}
+    for jsonFile in `ls *json`; do
+        dirandname=($(cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'))
+        data=($(cat ${jsonFile} | jq '.data' | sed '{s/"//g;}'))
+        md5=($(cat ${jsonFile} | jq '.hash.md5' | sed '{s/"//g;}'))
+        sha1=($(cat ${jsonFile} | jq '.hash."sha-1"' | sed '{s/"//g;}'))
 
-            # output files
-            echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
+        dir="$(dirname "${dirandname}")"
+        name="$(basename "${dirandname}")"
+        csvpath=${dir}"/files.csv"
+        tsvpath=${dir}"/files.tsv"
 
-            # output csv or tsv
-            size=$(($(wc -c < ${outputDir}"/"${dirandname}))) # get the size with blank in the front
-            if [ ${isC} -eq 1 ]; then
-                echo "${name},${size},${md5},${sha1}" > ${outputDir}"/"${csvpath}
-            elif [ ${isC} -eq 2 ]; then
-                printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" > ${outputDir}"/"${tsvpath}
-            fi
+        # create dir & files
+        mkdir -p ${outputDir}"/"${dirandname%/*}
+
+        # output files
+        echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
+
+        # output csv or tsv
+        size=$(($(wc -c < ${outputDir}"/"${dirandname})))
+        if [ ${isC} -eq 1 ]; then
+            echo "${name},${size},${md5},${sha1}" > ${outputDir}"/"${csvpath}
+        elif [ ${isC} -eq 2 ]; then
+            printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" > ${outputDir}"/"${tsvpath}
         fi
-        count=count+1
     done
 
 }
