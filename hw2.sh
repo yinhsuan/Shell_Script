@@ -1,10 +1,10 @@
 #!/bin/sh
 
-function handler() {
+handler() {
     # get variable
-    name=($(cat ${inputFile} | jq '.name' | sed '{s/"//g;}'))
-    author=($(cat ${inputFile} | jq '.author' | sed '{s/"//g;}'))
-    date=($(cat ${inputFile} | jq '.date' | sed '{s/"//g;}'))
+    name=`cat ${inputFile} | jq '.name' | sed '{s/"//g;}'`
+    author=`cat ${inputFile} | jq '.author' | sed '{s/"//g;}'`
+    date=`cat ${inputFile} | jq '.date' | sed '{s/"//g;}'`
 
     # output info.json
     if [ ${isJ} -eq 1 ]; then
@@ -18,10 +18,10 @@ function handler() {
     jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=counter+1; done
 
     for jsonFile in `ls *json`; do
-        dirandname=($(cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'))
-        data=($(cat ${jsonFile} | jq '.data' | sed '{s/"//g;}'))
-        md5=($(cat ${jsonFile} | jq '.hash.md5' | sed '{s/"//g;}'))
-        sha1=($(cat ${jsonFile} | jq '.hash."sha-1"' | sed '{s/"//g;}'))
+        dirandname=`cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'`
+        data=`cat ${jsonFile} | jq '.data' | sed '{s/"//g;}'`
+        md5=`cat ${jsonFile} | jq '.hash.md5' | sed '{s/"//g;}'`
+        sha1=`cat ${jsonFile} | jq '.hash."sha-1"' | sed '{s/"//g;}'`
 
         dir="$(dirname "${dirandname}")"
         name="$(basename "${dirandname}")"
