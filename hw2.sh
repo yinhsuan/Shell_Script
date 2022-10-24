@@ -8,7 +8,7 @@ handler() {
 
     # output info.json
     if [ ${isJ} -eq 1 ]; then
-        formatDate=($(date -I seconds -r ${date}))
+        formatDate=`date -I seconds -r ${date}`
         jsonpath=${outputDir}"/info.json"
         printf "{\"name\": \"%s\", \"author\": \"%s\", \"date\": \"%s\"}" "${name}" "${author}" "${formatDate}" > "${jsonpath}"
     fi
@@ -35,7 +35,7 @@ handler() {
         echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
 
         # output csv or tsv
-        size=$(($(wc -c < ${outputDir}"/"${dirandname})))
+        size=`wc -c < ${outputDir}"/"${dirandname}`
         if [ ${isC} -eq 1 ]; then
             echo "${name},${size},${md5},${sha1}" > ${outputDir}"/"${csvpath}
         elif [ ${isC} -eq 2 ]; then
