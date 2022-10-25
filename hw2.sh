@@ -8,7 +8,7 @@ handler() {
 
     # output info.json
     if [ ${isJ} -eq 1 ]; then
-        formatDate=`date -I seconds -r ${date}`
+        formatDate=`date -Iseconds -r ${date}`
         jsonpath=${outputDir}"/info.json"
         printf "{\"name\": \"%s\", \"author\": \"%s\", \"date\": \"%s\"}" "${name}" "${author}" "${formatDate}" > "${jsonpath}"
     fi
