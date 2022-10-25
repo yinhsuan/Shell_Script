@@ -35,7 +35,8 @@ handler() {
         echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
 
         # output csv or tsv
-        size=`wc -c < ${outputDir}"/"${dirandname}`
+        size=`ls -l ${outputDir}"/"${dirandname} | awk 'BEGIN {FS=" "} {print $5}'`
+
         if [ ${isC} -eq 1 ]; then
             echo "${name},${size},${md5},${sha1}" > ${outputDir}"/"${csvpath}
         elif [ ${isC} -eq 2 ]; then
