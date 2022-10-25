@@ -29,7 +29,8 @@ handler() {
         tsvpath=${dir}"/files.tsv"
 
         # create dir & files
-        mkdir -p ${outputDir}"/"${dirandname%/*}
+        # mkdir -p ${outputDir}"/"${dirandname%/*}
+        mkdir -p ${outputDir}"/"${dir}
 
         # output files
         echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
