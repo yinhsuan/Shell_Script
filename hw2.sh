@@ -39,9 +39,11 @@ handler() {
         size=`ls -l ${outputDir}"/"${dirandname} | awk 'BEGIN {FS=" "} {print $5}'`
 
         if [ ${isC} -eq 1 ]; then
-            echo "${name},${size},${md5},${sha1}" > ${outputDir}"/"${csvpath}
+            echo "filename,size,md5,sha1" > ${outputDir}"/"${csvpath}
+            echo "${name},${size},${md5},${sha1}" >> ${outputDir}"/"${csvpath}
         elif [ ${isC} -eq 2 ]; then
-            printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" > ${outputDir}"/"${tsvpath}
+            echo "filename\tsize\tmd5\tsha1" > ${outputDir}"/"${tsvpath}
+            printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" >> ${outputDir}"/"${tsvpath}
         fi
     done
 
