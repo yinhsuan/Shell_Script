@@ -15,7 +15,7 @@ handler() {
 
     # run each file case
     counter=0;
-    jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=counter+1; done
+    jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=$(($counter+1)); done
 
     for jsonFile in `ls *json`; do
         dirandname=`cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'`
