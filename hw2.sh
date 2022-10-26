@@ -27,7 +27,6 @@ handler() {
     counter=0
     jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=$(($counter+1)); done
 
-    invalidFileCount=0
     for jsonFile in `ls *json`; do
         dirandname=`cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'`
         data=`cat ${jsonFile} | jq '.data' | sed '{s/"//g;}'`
@@ -41,7 +40,7 @@ handler() {
         # checksum
         md5Check=`md5sum data.txt | awk 'BEGIN {FS=" "} {print $1}'`
         sha1Check=`sha1sum data.txt | awk 'BEGIN {FS=" "} {print $1}'`
-        if ![ ${md5} == ${md5Check} -a ${sha1} == ${sha1Check} ]; then
+        if [ ${md5} != ${md5Check} -o ${sha1} != ${sha1Check} ]; then
             md5=${md5Check}
             sha1=${sha1Check}
             invalidFileCount=$(($invalidFileCount+1))
@@ -70,6 +69,7 @@ outputFile=""
 outputDir=""
 isC=0 #isC=1(csv) #isC=2(tsv)
 isJ=0
+invalidFileCount=0
 
 errorMsg() {
     echo "hw2.sh -i INPUT -o OUTPUT [-c csv|tsv] [-j]"
