@@ -28,10 +28,10 @@ handler() {
     jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=$(($counter+1)); done
 
     for jsonFile in `ls *json`; do
-        dirandname=`cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'`
-        data=`cat ${jsonFile} | jq '.data' | sed '{s/"//g;}'`
-        md5=`cat ${jsonFile} | jq '.hash.md5' | sed '{s/"//g;}'`
-        sha1=`cat ${jsonFile} | jq '.hash."sha-1"' | sed '{s/"//g;}'`
+        dirandname=`cat ${jsonFile} | jq -r '.name'`
+        data=`cat ${jsonFile} | jq -r '.data'`
+        md5=`cat ${jsonFile} | jq -r '.hash.md5'`
+        sha1=`cat ${jsonFile} | jq -r '.hash."sha-1"'`
         dir="$(dirname "${dirandname}")"
         name="$(basename "${dirandname}")"
 
