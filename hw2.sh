@@ -2,9 +2,9 @@
 
 handler() {
     # get variable
-    name=`cat ${inputFile} | jq '.name' | sed '{s/"//g;}'`
-    author=`cat ${inputFile} | jq '.author' | sed '{s/"//g;}'`
-    date=`cat ${inputFile} | jq '.date' | sed '{s/"//g;}'`
+    name=`cat ${inputFile} | jq -r '.name'`
+    author=`cat ${inputFile} | jq -r '.author'`
+    date=`cat ${inputFile} | jq -r '.date'`
 
     csvpath=${outputDir}"/files.csv"
     tsvpath=${outputDir}"/files.tsv"
