@@ -43,7 +43,7 @@ handler() {
         if [ ${md5} != ${md5Check} -o ${sha1} != ${sha1Check} ]; then
             md5=${md5Check}
             sha1=${sha1Check}
-            invalidFileCount=$(($invalidFileCount+1))
+            invalidFileCount=${invalidFileCount+1}+1
         fi
         
         # create dir & files
