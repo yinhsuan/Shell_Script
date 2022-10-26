@@ -2,9 +2,9 @@
 
 handler() {
     # get variable
-    name=`cat ${inputFile} | jq -r '.name'`
-    author=`cat ${inputFile} | jq -r '.author'`
-    date=`cat ${inputFile} | jq -r '.date'`
+    name=`cat ${inputFile} | jq '.name' | sed '{s/"//g;}'`
+    author=`cat ${inputFile} | jq '.author' | sed '{s/"//g;}'`
+    date=`cat ${inputFile} | jq '.date' | sed '{s/"//g;}'`
 
     csvpath=${outputDir}"/files.csv"
     tsvpath=${outputDir}"/files.tsv"
@@ -28,10 +28,10 @@ handler() {
     jq -rc '.files[]' ${inputFile} | while IFS=, read var1 var2 var3; do echo "$var1, $var2, $var3" > ${counter}.json; counter=$(($counter+1)); done
 
     for jsonFile in `ls *json`; do
-        dirandname=`cat ${jsonFile} | jq -r '.name'`
-        data=`cat ${jsonFile} | jq -r '.data'`
-        md5=`cat ${jsonFile} | jq -r '.hash.md5'`
-        sha1=`cat ${jsonFile} | jq -r '.hash."sha-1"'`
+        dirandname=`cat ${jsonFile} | jq '.name' | sed '{s/"//g;}'`
+        data=`cat ${jsonFile} | jq '.data' | sed '{s/"//g;}'`
+        md5=`cat ${jsonFile} | jq '.hash.md5' | sed '{s/"//g;}'`
+        sha1=`cat ${jsonFile} | jq '.hash."sha-1"' | sed '{s/"//g;}'`
         dir="$(dirname "${dirandname}")"
         name="$(basename "${dirandname}")"
 
