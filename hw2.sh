@@ -45,7 +45,6 @@ handler() {
             md5=${md5Check}
             sha1=${sha1Check}
             invalidFileCount=$(($invalidFileCount+1))
-            echo ${invalidFileCount}
         fi
         
         # create dir & files
