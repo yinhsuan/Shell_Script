@@ -6,12 +6,19 @@ handler() {
     author=`cat ${inputFile} | jq '.author' | sed '{s/"//g;}'`
     date=`cat ${inputFile} | jq '.date' | sed '{s/"//g;}'`
 
+    csvpath=${outputDir}"/files.csv"
+    tsvpath=${outputDir}"/files.tsv"
+
     # output info.json
     if [ ${isJ} -eq 1 ]; then
         formatDate=`date -Iseconds -r ${date}`
         jsonpath=${outputDir}"/info.json"
         printf "{\"name\": \"%s\", \"author\": \"%s\", \"date\": \"%s\"}" "${name}" "${author}" "${formatDate}" > "${jsonpath}"
     fi
+
+    # output csv & tsv
+    echo "filename,size,md5,sha1" > ${csvpath}
+    echo "filename\tsize\tmd5\tsha1" > ${tsvpath}
 
     # run each file case
     counter=0;
@@ -25,9 +32,7 @@ handler() {
 
         dir="$(dirname "${dirandname}")"
         name="$(basename "${dirandname}")"
-        csvpath=${dir}"/files.csv"
-        tsvpath=${dir}"/files.tsv"
-
+        
         # create dir & files
         # mkdir -p ${outputDir}"/"${dirandname%/*}
         mkdir -p ${outputDir}"/"${dir}
@@ -35,15 +40,12 @@ handler() {
         # output files
         echo "${data}" | base64 --decode > ${outputDir}"/"${dirandname}
 
-        # output csv or tsv
+        # output to csv or tsv
         size=`ls -l ${outputDir}"/"${dirandname} | awk 'BEGIN {FS=" "} {print $5}'`
-
         if [ ${isC} -eq 1 ]; then
-            echo "filename,size,md5,sha1" > ${outputDir}"/"${csvpath}
-            echo "${name},${size},${md5},${sha1}" >> ${outputDir}"/"${csvpath}
+            echo "${name},${size},${md5},${sha1}" >> ${csvpath}
         elif [ ${isC} -eq 2 ]; then
-            echo "filename\tsize\tmd5\tsha1" > ${outputDir}"/"${tsvpath}
-            printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" >> ${outputDir}"/"${tsvpath}
+            printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" >> ${tsvpath}
         fi
     done
 
