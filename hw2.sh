@@ -17,8 +17,11 @@ handler() {
     fi
 
     # output csv & tsv
-    echo "filename,size,md5,sha1" > ${csvpath}
-    echo "filename\tsize\tmd5\tsha1" > ${tsvpath}
+    if [ ${isC} -eq 1 ]; then
+        echo "filename,size,md5,sha1" > ${csvpath}
+    elif [ ${isC} -eq 2 ]; then
+        echo "filename\tsize\tmd5\tsha1" > ${tsvpath}
+    fi
 
     # run each file case
     counter=0;
