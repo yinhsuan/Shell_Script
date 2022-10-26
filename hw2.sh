@@ -46,9 +46,9 @@ handler() {
         # output to csv or tsv
         size=`ls -l ${outputDir}"/"${dirandname} | awk 'BEGIN {FS=" "} {print $5}'`
         if [ ${isC} -eq 1 ]; then
-            echo "${name},${size},${md5},${sha1}" >> ${csvpath}
+            echo "${dirandname},${size},${md5},${sha1}" >> ${csvpath}
         elif [ ${isC} -eq 2 ]; then
-            printf "%s\t%s\t%s\t%s\n" "${name}" "${size}" "${md5}" "${sha1}" >> ${tsvpath}
+            printf "%s\t%s\t%s\t%s\n" "${dirandname}" "${size}" "${md5}" "${sha1}" >> ${tsvpath}
         fi
     done
 
