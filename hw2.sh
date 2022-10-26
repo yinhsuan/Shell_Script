@@ -41,7 +41,7 @@ handler() {
         # checksum
         md5Check=`md5sum data.txt | awk 'BEGIN {FS=" "} {print $1}'`
         sha1Check=`sha1sum data.txt | awk 'BEGIN {FS=" "} {print $1}'`
-        if [ ${md5} != ${md5Check} -o ${sha1} != ${sha1Check} ]; then
+        if ![ ${md5} == ${md5Check} -a ${sha1} == ${sha1Check} ]; then
             md5=${md5Check}
             sha1=${sha1Check}
             invalidFileCount=$(($invalidFileCount+1))
